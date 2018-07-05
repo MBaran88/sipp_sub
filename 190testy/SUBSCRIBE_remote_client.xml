@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="iso-8859-2" ?>
+<!DOCTYPE scenario SYSTEM "sipp.dtd">
+
+<scenario name="UAC REGISTER + SUBSCRIBE dialog-info">
+
+<!--  Use with CSV file struct like: 32;192.168.1.211;[authentication username=32 password=32];21;3600;30
+      (user part of uri; server address; auth tag; subscribed user in each line;register expires; subscribe expires)
+-->
+
+  <send retrans="500">
+    <![CDATA[
+
+    SUBSCRIBE sip:[field2]@[remote_ip]:[remote_port] SIP/2.0
+    Via: SIP/2.0/[transport] [local_ip]:[remote_port];branch=[branch]
+    From: sipp <sip:[field0]@[field1]>;tag=[call_number]
+    To: <sip:[field2]@[field1]:[remote_port]>
+    Call-ID: [call_id]
+    CSeq: [cseq] SUBSCRIBE
+    Contact: sip:[field0]@[local_ip]:[remote_port]
+    Max-Forwards: 10
+    Event: dialog
+    Expires: [field3]
+    User-Agent: SIPp/Linux
+    Accept: application/dialog-info+xml; multipart/related; application/rlmi+xml
+    Content-Length: 0
+
+    ]]>
+  </send>
+
+  <recv response="200" rtd="true">
+  </recv>
+
+  <recv request="NOTIFY" crlf="true">
+  </recv>
+
+  <send>
+    <![CDATA[
+
+      SIP/2.0 200 OK
+      [last_Via:]
+      [last_From:]
+      [last_To:]
+      [last_Call-ID:]
+      [last_CSeq:]
+      Content-Length: 0
+
+    ]]>
+  </send>
+
+  <!-- definition of the response time repartition table (unit is ms)   -->
+  <ResponseTimeRepartition value="10, 20, 30, 40, 50, 100, 150, 200"/>
+
+  <!-- definition of the call length repartition table (unit is ms)     -->
+  <CallLengthRepartition value="10, 50, 100, 500, 1000, 5000, 10000"/>
+
+</scenario>
